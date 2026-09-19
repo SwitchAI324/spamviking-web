@@ -232,7 +232,7 @@
     try {
       const res = await fetch(
         `${SUPABASE_URL}/rest/v1/sv_users` +
-        `?owner_email=eq.${encodeURIComponent(email)}` +
+        `?email=eq.${encodeURIComponent(email)}` +
         `&select=id`,
         { headers: {
             'apikey': SUPABASE_KEY,
