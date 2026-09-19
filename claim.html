@@ -231,18 +231,20 @@
 
     try {
       const res = await fetch(
-        `${SUPABASE_URL}/rest/v1/sv_users` +
-        `?email=eq.${encodeURIComponent(email)}` +
-        `&select=id`,
-        { headers: {
+        `${SUPABASE_URL}/rest/v1/rpc/count_raids_by_email`,
+        {
+          method: 'POST',
+          headers: {
             'apikey': SUPABASE_KEY,
-            'Authorization': `Bearer ${SUPABASE_KEY}`
-        }}
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ p_email: email })
+        }
       )
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      const rows = await res.json()
-      document.getElementById('raid-count').textContent =
-        rows.length
+      const count = await res.json()
+      document.getElementById('raid-count').textContent = count
       show('view-main')
     } catch (err) {
       document.getElementById('error-msg').textContent =
