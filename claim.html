@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Claim Your Raids — SpamViking</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:    #0D0D0B;
+      --surface:  #161614;
+      --surface2: #1E1E1B;
+      --parchment:#E8E3D5;
+      --muted:    #8A8578;
+      --red:      #C0392B;
+      --gold:     #B8963E;
+      --gold-lt:  #D4AC52;
+      --border:   #2A2A26;
+    }
+
+    body {
+      background: var(--black);
+      color: var(--parchment);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI',
+                   Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 40px;
+      background: linear-gradient(
+        to bottom, rgba(13,13,11,0.95), transparent);
+    }
+
+    .logo {
+      font-family: Impact, 'Arial Narrow', Arial, sans-serif;
+      font-size: 22px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--parchment);
+      text-decoration: none;
+    }
+    .logo span { color: var(--red); }
+
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 120px 24px 80px;
+    }
+
+    .card {
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .eyebrow {
+      font-family: 'SF Mono', 'Fira Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-family: Impact, 'Arial Narrow', Arial, sans-serif;
+      font-size: clamp(32px, 6vw, 56px);
+      text-transform: uppercase;
+      letter-spacing: 0.01em;
+      line-height: 1;
+      color: var(--parchment);
+      margin-bottom: 16px;
+    }
+
+    h1 em { font-style: normal; color: var(--red); }
+
+    .sub {
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+
+    .email-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px 18px;
+      font-family: 'SF Mono', 'Fira Mono', monospace;
+      font-size: 14px;
+      color: var(--gold-lt);
+      margin-bottom: 32px;
+      word-break: break-all;
+    }
+
+    .raid-count {
+      font-family: Impact, 'Arial Narrow', Arial, sans-serif;
+      font-size: clamp(56px, 12vw, 96px);
+      color: var(--gold);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .raid-label {
+      font-size: 13px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 40px;
+    }
+
+    .cta {
+      display: inline-block;
+      background: var(--red);
+      color: var(--parchment);
+      font-weight: 700;
+      font-size: 15px;
+      padding: 14px 36px;
+      border-radius: 5px;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .cta:hover { background: #a93226; }
+
+    .status {
+      margin-top: 20px;
+      font-size: 13px;
+      color: var(--muted);
+      min-height: 18px;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 24px 40px;
+      text-align: center;
+    }
+    footer p { font-size: 12px; color: var(--muted); }
+
+    @media (max-width: 600px) {
+      nav { padding: 16px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="/">Spam<span>Viking</span></a>
+</nav>
+
+<main>
+  <div class="card">
+
+    <!-- NO EMAIL PARAM -->
+    <div id="view-no-email" style="display:none">
+      <p class="eyebrow">⚔ &nbsp;SpamViking</p>
+      <h1>Nothing to<br>claim <em>here</em></h1>
+      <p class="sub">Open the link from your SpamViking invite
+         email to claim your raids.</p>
+    </div>
+
+    <!-- LOADING -->
+    <div id="view-loading">
+      <p class="eyebrow">⚔ &nbsp;SpamViking</p>
+      <p class="sub">Loading your raids…</p>
+    </div>
+
+    <!-- MAIN -->
+    <div id="view-main" style="display:none">
+      <p class="eyebrow">⚔ &nbsp;Your raids are waiting</p>
+      <h1>Take <em>credit</em>.</h1>
+      <p class="sub">We found raids linked to:</p>
+      <div class="email-box" id="email-display"></div>
+      <div class="raid-count" id="raid-count">—</div>
+      <div class="raid-label">raids on your behalf</div>
+      <p class="sub">Create your account to claim them, name your
+         Viking, and watch the chaos unfold.</p>
+      <a class="cta" id="claim-btn" href="#">Claim my raids</a>
+      <div class="status" id="status"></div>
+    </div>
+
+    <!-- ERROR -->
+    <div id="view-error" style="display:none">
+      <p class="eyebrow">⚔ &nbsp;SpamViking</p>
+      <h1>Something<br>went <em>wrong</em></h1>
+      <p class="sub" id="error-msg"></p>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <p>© 2026 SpamViking. All raids reserved.</p>
+</footer>
+
+<script>
+  const SUPABASE_URL =
+    'https://lxmzwftmshqghkyapibg.supabase.co'
+  const SUPABASE_KEY =
+    'sb_publishable_C3ypBZmycobb3Nf7_rVBbA_a-lzYp0G'
+
+  function show(id) {
+    ['view-no-email','view-loading','view-main','view-error']
+      .forEach(v => {
+        document.getElementById(v).style.display =
+          v === id ? '' : 'none'
+      })
+  }
+
+  async function init() {
+    const params = new URLSearchParams(window.location.search)
+    const email  = params.get('email')
+
+    if (!email) { show('view-no-email'); return }
+
+    document.getElementById('email-display').textContent = email
+    document.getElementById('claim-btn').href =
+      'https://spamviking.com/join?email=' +
+      encodeURIComponent(email)
+
+    try {
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/sv_users` +
+        `?owner_email=eq.${encodeURIComponent(email)}` +
+        `&select=id`,
+        { headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`
+        }}
+      )
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      const rows = await res.json()
+      document.getElementById('raid-count').textContent =
+        rows.length
+      show('view-main')
+    } catch (err) {
+      document.getElementById('error-msg').textContent =
+        'Could not load your raid count. ' +
+        'Try opening your invite link again.'
+      show('view-error')
+      console.error(err)
+    }
+  }
+
+  init()
+</script>
+</body>
+</html>
