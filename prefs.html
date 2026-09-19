@@ -106,6 +106,7 @@
 
     .btn {
       display: inline-block;
+      width: 100%;
       font-weight: 700;
       font-size: 15px;
       padding: 14px 36px;
@@ -121,11 +122,38 @@
 
     .btn-muted {
       background: var(--surface);
-      color: var(--muted);
+      color: var(--parchment);
       border: 1px solid var(--border);
-      margin-top: 12px;
     }
     .btn-muted:hover { background: #222220; }
+
+    .tz-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+      text-align: left;
+    }
+
+    .tz-label {
+      font-size: 12px;
+      color: var(--muted);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .tz-select {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      color: var(--parchment);
+      font-size: 13px;
+      padding: 8px 10px;
+      appearance: none;
+      cursor: pointer;
+    }
+    .tz-select:focus { outline: 1px solid var(--gold); }
 
     .status {
       margin-top: 24px;
@@ -182,7 +210,8 @@
          from your account settings.</p>
       <button class="btn btn-red" id="unsub-btn">
         Yes, unsubscribe me
-      </button><br>
+      </button>
+      <br><br>
       <a class="btn btn-muted" href="/">Never mind</a>
       <div class="status" id="unsub-status"></div>
     </div>
@@ -201,15 +230,25 @@
       <h1>Your <em>updates</em>.</h1>
       <p class="sub">Managing preferences for:</p>
       <div class="email-box" id="email-display-prefs"></div>
-      <p class="sub">How often do you want raid updates?</p>
 
-      <div id="freq-btns" style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px">
-        <button class="btn btn-muted" data-freq="daily"
-                style="font-size:14px">Daily digest</button>
-        <button class="btn btn-muted" data-freq="weekly"
-                style="font-size:14px">Weekly roundup</button>
-        <button class="btn btn-muted" data-freq="realtime"
-                style="font-size:14px">Real-time (every raid)</button>
+      <p class="sub" style="margin-bottom:16px">
+        How often do you want raid updates?</p>
+
+      <!-- Timezone picker — shown only for weekly -->
+      <div id="tz-row" class="tz-row" style="display:none">
+        <span class="tz-label">Your time zone</span>
+        <select class="tz-select" id="tz-select"></select>
+      </div>
+
+      <div id="freq-btns"
+           style="display:flex;flex-direction:column;gap:10px;
+                  margin-bottom:24px">
+        <button class="btn btn-muted" data-freq="weekly">
+          Weekly roundup
+        </button>
+        <button class="btn btn-red" data-freq="off">
+          Turn off all emails
+        </button>
       </div>
 
       <div class="status" id="prefs-status"></div>
@@ -241,6 +280,28 @@
   const SUPABASE_URL = 'https://lxmzwftmshqghkyapibg.supabase.co'
   const SUPABASE_KEY = 'sb_publishable_C3ypBZmycobb3Nf7_rVBbA_a-lzYp0G'
 
+  // Common IANA zones ordered by UTC offset, labelled for humans
+  const TZ_OPTIONS = [
+    ['Pacific/Honolulu',      'Hawaii (UTC−10)'],
+    ['America/Anchorage',     'Alaska (UTC−9)'],
+    ['America/Los_Angeles',   'Pacific (UTC−8/−7)'],
+    ['America/Denver',        'Mountain (UTC−7/−6)'],
+    ['America/Chicago',       'Central (UTC−6/−5)'],
+    ['America/New_York',      'Eastern (UTC−5/−4)'],
+    ['America/Halifax',       'Atlantic (UTC−4/−3)'],
+    ['America/Sao_Paulo',     'Brasília (UTC−3)'],
+    ['Europe/London',         'London (UTC+0/+1)'],
+    ['Europe/Paris',          'Central Europe (UTC+1/+2)'],
+    ['Europe/Helsinki',       'Eastern Europe (UTC+2/+3)'],
+    ['Asia/Dubai',            'Gulf (UTC+4)'],
+    ['Asia/Kolkata',          'India (UTC+5:30)'],
+    ['Asia/Bangkok',          'Indochina (UTC+7)'],
+    ['Asia/Singapore',        'Singapore (UTC+8)'],
+    ['Asia/Tokyo',            'Japan (UTC+9)'],
+    ['Australia/Sydney',      'Sydney (UTC+10/+11)'],
+    ['Pacific/Auckland',      'New Zealand (UTC+12/+13)'],
+  ]
+
   function show(id) {
     ['view-no-email','view-loading','view-unsub','view-unsub-done',
      'view-prefs','view-error']
@@ -250,10 +311,34 @@
       })
   }
 
-  async function setPrefs(email, notify_global, frequency_mode) {
+  function buildTzSelect() {
+    const sel = document.getElementById('tz-select')
+    const detected = Intl.DateTimeFormat().resolvedOptions().timeZone
+    let matched = false
+    TZ_OPTIONS.forEach(([val, label]) => {
+      const opt = document.createElement('option')
+      opt.value = val
+      opt.textContent = label
+      if (val === detected) { opt.selected = true; matched = true }
+      sel.appendChild(opt)
+    })
+    // If detected zone isn't in our list, prepend it raw
+    if (!matched) {
+      const opt = document.createElement('option')
+      opt.value = detected
+      opt.textContent = detected
+      opt.selected = true
+      sel.insertBefore(opt, sel.firstChild)
+    }
+  }
+
+  async function setPrefs(email, notify_global, frequency_mode,
+                          time_zone) {
     const body = { p_email: email, p_notify_global: notify_global }
     if (frequency_mode !== undefined)
       body.p_frequency_mode = frequency_mode
+    if (time_zone !== undefined)
+      body.p_time_zone = time_zone
     const res = await fetch(
       `${SUPABASE_URL}/rest/v1/rpc/set_prefs`,
       {
@@ -302,11 +387,22 @@
     }
 
     // Prefs view
+    buildTzSelect()
     document.getElementById('email-display-prefs').textContent = email
     document.getElementById('unsub-link').href =
       `?u=${encodeURIComponent(email)}&stop=1`
 
     show('view-prefs')
+
+    // Show tz picker when weekly is hovered/focused to hint it's used
+    const weeklyBtn = document.querySelector('[data-freq="weekly"]')
+    const tzRow = document.getElementById('tz-row')
+    weeklyBtn.addEventListener('mouseenter', () => {
+      tzRow.style.display = 'flex'
+    })
+    weeklyBtn.addEventListener('focus', () => {
+      tzRow.style.display = 'flex'
+    })
 
     document.querySelectorAll('[data-freq]').forEach(btn => {
       btn.addEventListener('click', async () => {
@@ -317,9 +413,16 @@
         st.className = 'status'
         st.textContent = 'Saving…'
         try {
-          await setPrefs(email, true, freq)
-          st.className = 'status ok'
-          st.textContent = '✓ Preference saved.'
+          if (freq === 'off') {
+            await setPrefs(email, false)
+            st.className = 'status ok'
+            st.textContent = '✓ Emails turned off.'
+          } else {
+            const tz = document.getElementById('tz-select').value
+            await setPrefs(email, true, freq, tz)
+            st.className = 'status ok'
+            st.textContent = '✓ Weekly digest saved.'
+          }
         } catch (err) {
           st.className = 'status err'
           st.textContent = 'Could not save. Try again.'
