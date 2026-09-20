@@ -918,10 +918,7 @@
       show('settings-content')
 
       // Nav name
-      if (prefs.email) {
-        // host_name not in get_prefs — use email as fallback
-        setText('nav-name', prefs.email.split('@')[0])
-      }
+      setText('nav-name', prefs.host_name || prefs.email || '')
 
       // notify toggle
       const toggle = document.getElementById('notify-toggle')
