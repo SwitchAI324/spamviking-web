@@ -688,7 +688,7 @@
       const { error } = await sb.auth.signInWithOtp({
         email,
         options: {
-          shouldCreateUser: false,
+          shouldCreateUser: true,
           emailRedirectTo: 'https://spamviking.com/dashboard'
         }
       })
