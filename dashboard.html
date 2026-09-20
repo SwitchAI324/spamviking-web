@@ -466,23 +466,13 @@
       <div class="gate-status" id="login-email-status"></div>
     </div>
 
-    <!-- step 2: OTP -->
+    <!-- step 2: check email -->
     <div id="gate-otp">
       <p class="eyebrow">⚔ &nbsp;Check your inbox</p>
-      <h1>Enter the <em>code</em>.</h1>
+      <h1>Link <em>sent</em>.</h1>
       <p class="gate-sub" id="otp-hint"></p>
-      <div class="gate-field">
-        <label for="login-otp">6-digit code</label>
-        <input id="login-otp" type="text"
-               placeholder="123456"
-               maxlength="6"
-               inputmode="numeric"
-               autocomplete="one-time-code" />
-      </div>
-      <button class="gate-btn" id="login-verify-btn">
-        Sign in
-      </button>
-      <div class="gate-status" id="login-otp-status"></div>
+      <p class="gate-sub">Click the link in your email to sign in.
+         You can close this tab.</p>
     </div>
 
   </div>
@@ -695,7 +685,10 @@
       st.className = 'gate-status'
       st.textContent = ''
 
-      const { error } = await sb.auth.signInWithOtp({ email })
+      const { error } = await sb.auth.signInWithOtp({
+        email,
+        options: { shouldCreateUser: false }
+      })
 
       if (error) {
         st.className = 'gate-status err'
@@ -712,46 +705,8 @@
       show('gate-otp')
     })
 
-  async function doLoginVerify() {
-    const code = document.getElementById('login-otp').value.trim()
-    const st   = document.getElementById('login-otp-status')
-    const btn  = document.getElementById('login-verify-btn')
-
-    if (!code || code.length < 6) {
-      st.className = 'gate-status err'
-      st.textContent = 'Enter the 6-digit code.'
-      return
-    }
-
-    btn.disabled = true
-    btn.textContent = 'Verifying…'
-    st.className = 'gate-status'
-    st.textContent = ''
-
-    const { error } = await sb.auth.verifyOtp({
-      email: loginEmail,
-      token: code,
-      type: 'email'
-    })
-
-    if (error) {
-      st.className = 'gate-status err'
-      st.textContent = 'Wrong or expired code.'
-      btn.disabled = false
-      btn.textContent = 'Sign in'
-      return
-    }
-
-    await loadDashboard()
-  }
-
-  document.getElementById('login-verify-btn')
-    .addEventListener('click', doLoginVerify)
-
-  document.getElementById('login-otp')
-    .addEventListener('keydown', e => {
-      if (e.key === 'Enter') doLoginVerify()
-    })
+  // Magic link lands back here with tokens in the URL hash —
+  // Supabase JS picks them up automatically via onAuthStateChange.
 
   // ── SIGN OUT ──────────────────────────────────────────────
 
@@ -1025,8 +980,15 @@
     const { data: { session } } = await sb.auth.getSession()
     if (session) {
       await loadDashboard()
+      return
     }
-    // else: gate is already visible
+
+    // Catch magic link landing (tokens in URL hash)
+    sb.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        await loadDashboard()
+      }
+    })
   }
 
   init()
