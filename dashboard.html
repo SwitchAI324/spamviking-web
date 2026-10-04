@@ -809,7 +809,7 @@
   // Panel 3 — recordings
   async function loadRecordings() {
     try {
-      const rows = await rpc('dashboard_web_calls')
+      const rows = await rpc('dashboard_recordings')
       hide('rec-loading')
       const el = document.getElementById('rec-content')
       el.style.display = 'flex'
@@ -822,49 +822,66 @@
         return
       }
 
-      // Render cards first, then fetch links asynchronously
-      el.innerHTML = rows.map((r, i) => `
-        <div class="rec-card" id="rec-${i}">
-          <div class="rec-info">
-            <div class="rec-email">${esc(r.target_email)}</div>
-            <div class="rec-meta">
-              ${fmtDate(r.started_at)}
-              ${r.duration_seconds
-                ? ' · ' + Math.round(r.duration_seconds / 60) + ' min'
-                : ''}
-              ${r.call_outcome ? ' · ' + esc(r.call_outcome) : ''}
-            </div>
-          </div>
-          <button class="play-btn" id="play-${i}" disabled>
-            Loading…
-          </button>
-        </div>
-      `).join('')
+      el.innerHTML = rows.map((r, i) => {
+        // primary label: phone shows host+number+org, web shows target email
+        const isPhone = r.channel === 'phone'
+        const primaryLine = isPhone
+          ? [r.host_name, r.number, r.claimed_org].filter(Boolean).map(esc).join(' · ')
+          : esc(r.target_email || '—')
 
-      // Fetch recording links
-      const { data: { session } } = await sb.auth.getSession()
-      rows.forEach(async (r, i) => {
+        const channelBadge = `<span class="status-pill ${isPhone ? 'status-pending' : 'status-booked'}"
+          style="margin-top:0;margin-right:8px;font-size:9px">${isPhone ? 'PHONE' : 'WEB'}</span>`
+
+        const metaParts = [
+          fmtDate(r.started_at),
+          r.duration_seconds ? Math.round(r.duration_seconds / 60) + ' min' : null,
+          r.outcome ? esc(r.outcome) : null
+        ].filter(Boolean).join(' · ')
+
+        const playBtn = r.playable
+          ? `<button class="play-btn" id="play-${i}" data-slug="${esc(r.slug)}">▶ Play</button>`
+          : `<button class="play-btn" disabled style="background:#3a2020;color:#666;cursor:not-allowed">Expired</button>`
+
+        return `
+          <div class="rec-card">
+            <div class="rec-info">
+              <div class="rec-email">${channelBadge}${primaryLine}</div>
+              <div class="rec-meta">${metaParts}</div>
+            </div>
+            ${playBtn}
+          </div>`
+      }).join('')
+
+      // Wire play buttons
+      rows.forEach((r, i) => {
+        if (!r.playable) return
         const btn = document.getElementById(`play-${i}`)
-        if (!r.vapi_call_id) {
-          btn.textContent = 'No recording'
-          return
-        }
-        try {
-          const res = await fetch(
-            `${PE_BASE}/api/recording-link?slug=${encodeURIComponent(r.vapi_call_id)}`,
-            { headers: { 'x-phone-intake-secret': '' } }
-          )
-          if (!res.ok) throw new Error(res.status)
-          const { url } = await res.json()
-          btn.disabled = false
-          btn.textContent = '▶ Play'
-          btn.addEventListener('click', () => window.open(url, '_blank'))
-        } catch {
-          btn.textContent = 'Unavailable'
-        }
+        if (!btn) return
+        btn.addEventListener('click', async () => {
+          btn.disabled = true
+          btn.textContent = '…'
+          try {
+            const res = await fetch(
+              `${PE_BASE}/api/recording-link?slug=${encodeURIComponent(r.slug)}`
+            )
+            if (!res.ok) throw new Error(res.status)
+            const { url } = await res.json()
+            window.open(url, '_blank')
+          } catch {
+            btn.textContent = 'Error'
+          } finally {
+            btn.disabled = false
+            btn.textContent = '▶ Play'
+          }
+        })
       })
+
     } catch (e) {
       console.error('recordings', e)
+      const el = document.getElementById('rec-content')
+      el.style.display = ''
+      el.innerHTML = '<p class="empty" style="color:var(--red)">Could not load recordings.</p>'
+      hide('rec-loading')
     }
   }
 
