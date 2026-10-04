@@ -58,10 +58,7 @@
       gap: 20px;
     }
 
-    .viking-name {
-      font-size: 13px;
-      color: var(--muted);
-    }
+    .viking-name { font-size: 13px; color: var(--muted); }
     .viking-name strong { color: var(--gold-lt); }
 
     .sign-out-btn {
@@ -78,7 +75,7 @@
     /* ── LAYOUT ── */
     main {
       padding: 100px 40px 80px;
-      max-width: 960px;
+      max-width: 1100px;
       margin: 0 auto;
     }
 
@@ -98,7 +95,7 @@
       display: flex;
       align-items: baseline;
       gap: 12px;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       border-bottom: 1px solid var(--border);
       padding-bottom: 10px;
     }
@@ -118,93 +115,75 @@
       letter-spacing: 0.08em;
     }
 
-    /* ── CARDS ── */
-    .card-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 14px;
-    }
-
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 16px 18px;
-    }
-
-    .card-email {
-      font-family: 'SF Mono', 'Fira Mono', monospace;
+    /* ── TABLE ── */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
       font-size: 13px;
+    }
+
+    .data-table th {
+      text-align: left;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 0 12px 8px 0;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .data-table td {
+      padding: 9px 12px 9px 0;
+      border-top: 1px solid var(--border);
+      vertical-align: middle;
+      color: var(--parchment);
+    }
+
+    .data-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+    .mono {
+      font-family: 'SF Mono', 'Fira Mono', monospace;
+      font-size: 12px;
       color: var(--gold-lt);
-      margin-bottom: 6px;
       word-break: break-all;
     }
 
-    .card-meta {
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.6;
-    }
+    .muted { color: var(--muted); }
 
-    .status-pill {
+    /* ── STATUS PILL ── */
+    .pill {
       display: inline-block;
-      font-size: 10px;
+      font-size: 9px;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      padding: 2px 8px;
+      padding: 2px 7px;
       border-radius: 3px;
-      margin-top: 8px;
-      font-weight: 600;
-    }
-    .status-active   { background: #1a3a1a; color: var(--green); }
-    .status-booked   { background: #1a2a3a; color: var(--blue); }
-    .status-pending  { background: #2a2a1a; color: var(--gold); }
-    .status-dead     { background: #2a1a1a; color: #888; }
-
-    /* ── RECORDING CARD ── */
-    .rec-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 16px 18px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .rec-info { flex: 1; min-width: 0; }
-
-    .rec-email {
-      font-family: 'SF Mono', 'Fira Mono', monospace;
-      font-size: 12px;
-      color: var(--gold-lt);
-      margin-bottom: 4px;
+      font-weight: 700;
       white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
+    .pill-green  { background: #1a3a1a; color: var(--green); }
+    .pill-blue   { background: #1a2a3a; color: var(--blue); }
+    .pill-gold   { background: #2a2a1a; color: var(--gold); }
+    .pill-dim    { background: #2a1a1a; color: #888; }
 
-    .rec-meta { font-size: 12px; color: var(--muted); }
-
+    /* ── PLAY BUTTON ── */
     .play-btn {
-      flex-shrink: 0;
       background: var(--red);
       color: var(--parchment);
       border: none;
       border-radius: 4px;
-      padding: 8px 16px;
-      font-size: 13px;
+      padding: 5px 12px;
+      font-size: 12px;
       font-weight: 700;
       cursor: pointer;
-      text-decoration: none;
       white-space: nowrap;
       transition: background 0.15s;
     }
     .play-btn:hover { background: #a93226; }
     .play-btn:disabled {
-      background: #3a2020;
-      color: #666;
+      background: #2a1a1a;
+      color: #555;
       cursor: not-allowed;
     }
 
@@ -214,10 +193,7 @@
       grid-template-columns: 1fr 1fr;
       gap: 14px;
     }
-
-    @media (max-width: 600px) {
-      .settings-grid { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 600px) { .settings-grid { grid-template-columns: 1fr; } }
 
     .setting-card {
       background: var(--surface);
@@ -234,12 +210,7 @@
       margin-bottom: 10px;
     }
 
-    .setting-select,
-    .setting-toggle-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+    .setting-select { display: flex; align-items: center; gap: 10px; }
 
     select {
       flex: 1;
@@ -267,16 +238,11 @@
     }
     .save-btn:hover { background: #2a2a28; }
 
-    .toggle-wrap {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+    .toggle-wrap { display: flex; align-items: center; gap: 10px; }
 
     .toggle {
       position: relative;
-      width: 40px;
-      height: 22px;
+      width: 40px; height: 22px;
       flex-shrink: 0;
     }
     .toggle input { opacity: 0; width: 0; height: 0; }
@@ -302,24 +268,17 @@
       transform: translateX(18px);
       background: var(--green);
     }
-
-    .toggle-label {
-      font-size: 14px;
-      color: var(--parchment);
-    }
+    .toggle-label { font-size: 14px; color: var(--parchment); }
 
     /* ── EMPTY / LOADING ── */
-    .empty {
-      color: var(--muted);
-      font-size: 14px;
-      padding: 20px 0;
-    }
+    .empty { color: var(--muted); font-size: 13px; padding: 16px 0; }
 
     .loading-line {
-      height: 60px;
+      height: 38px;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 6px;
+      border-radius: 4px;
+      margin-bottom: 6px;
       animation: pulse 1.4s ease-in-out infinite;
     }
     @keyframes pulse {
@@ -373,7 +332,7 @@
       font-size: 14px;
       color: var(--muted);
       line-height: 1.6;
-      margin-bottom: 28px;
+      margin-bottom: 10px;
     }
 
     .gate-field {
@@ -425,7 +384,25 @@
     .gate-status.ok  { color: var(--green); }
     .gate-status.err { color: var(--red); }
 
-    /* OTP step inside gate */
+    /* "link sent" confirmation box */
+    .inbox-box {
+      margin-top: 28px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px 20px;
+    }
+    .inbox-box .inbox-icon {
+      font-size: 36px;
+      margin-bottom: 12px;
+    }
+    .inbox-box p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .inbox-box strong { color: var(--gold-lt); }
+
     #gate-otp { display: none; }
 
     footer {
@@ -435,10 +412,11 @@
     }
     footer p { font-size: 12px; color: var(--muted); }
 
-    @media (max-width: 600px) {
+    @media (max-width: 700px) {
       nav { padding: 14px 20px; }
-      main { padding: 90px 20px 60px; }
-      .card-grid { grid-template-columns: 1fr; }
+      main { padding: 90px 16px 60px; }
+      .data-table { font-size: 12px; }
+      .data-table th, .data-table td { padding-right: 8px; }
     }
   </style>
 </head>
@@ -452,8 +430,8 @@
     <div id="gate-email">
       <p class="eyebrow">⚔ &nbsp;SpamViking</p>
       <h1>Log <em>in</em>.</h1>
-      <p class="gate-sub">Enter your email and we'll send a
-         one-time code.</p>
+      <p class="gate-sub" style="margin-bottom:24px">Enter your email and
+         we'll send you a sign-in link.</p>
       <div class="gate-field">
         <label for="login-email">Email</label>
         <input id="login-email" type="email"
@@ -461,7 +439,7 @@
                autocomplete="email" />
       </div>
       <button class="gate-btn" id="login-send-btn">
-        Send code
+        Send sign-in link
       </button>
       <div class="gate-status" id="login-email-status"></div>
     </div>
@@ -470,9 +448,14 @@
     <div id="gate-otp">
       <p class="eyebrow">⚔ &nbsp;Check your inbox</p>
       <h1>Link <em>sent</em>.</h1>
-      <p class="gate-sub" id="otp-hint"></p>
-      <p class="gate-sub">Click the link in your email to sign in.
-         You can close this tab.</p>
+      <div class="inbox-box">
+        <div class="inbox-icon">📬</div>
+        <p>We sent a sign-in link to<br>
+           <strong id="otp-email-display"></strong></p>
+        <p style="margin-top:10px">Click the link in that email and
+           you'll land straight in your dashboard.<br>
+           You can close this tab.</p>
+      </div>
     </div>
 
   </div>
@@ -484,9 +467,7 @@
   <nav>
     <a class="logo" href="/">Spam<span>Viking</span></a>
     <div class="nav-right">
-      <span class="viking-name">
-        ⚔ <strong id="nav-name">…</strong>
-      </span>
+      <span class="viking-name">⚔ <strong id="nav-name">…</strong></span>
       <button class="sign-out-btn" id="sign-out-btn">Sign out</button>
     </div>
   </nav>
@@ -495,20 +476,21 @@
     <h1 class="page-title">Your <em>raids</em>.</h1>
 
     <!-- PANEL 1: Active raids -->
-    <section id="section-raids">
+    <section>
       <div class="section-head">
         <h2>Active raids</h2>
         <span class="count-badge" id="raids-count"></span>
       </div>
       <div id="raids-loading">
-        <div class="loading-line" style="margin-bottom:10px"></div>
+        <div class="loading-line"></div>
+        <div class="loading-line"></div>
         <div class="loading-line"></div>
       </div>
-      <div id="raids-content" class="card-grid" style="display:none"></div>
+      <div id="raids-content" style="display:none"></div>
     </section>
 
     <!-- PANEL 2: Booked calls -->
-    <section id="section-booked">
+    <section>
       <div class="section-head">
         <h2>Booked calls</h2>
         <span class="count-badge" id="booked-count"></span>
@@ -516,35 +498,32 @@
       <div id="booked-loading">
         <div class="loading-line"></div>
       </div>
-      <div id="booked-content" class="card-grid" style="display:none"></div>
+      <div id="booked-content" style="display:none"></div>
     </section>
 
     <!-- PANEL 3: Recordings -->
-    <section id="section-recordings">
+    <section>
       <div class="section-head">
         <h2>Recordings</h2>
         <span class="count-badge" id="rec-count"></span>
       </div>
       <div id="rec-loading">
-        <div class="loading-line" style="margin-bottom:10px"></div>
+        <div class="loading-line"></div>
         <div class="loading-line"></div>
       </div>
-      <div id="rec-content" style="display:none;
-           display:flex; flex-direction:column; gap:10px"></div>
+      <div id="rec-content" style="display:none"></div>
     </section>
 
     <!-- PANEL 4: Settings -->
-    <section id="section-settings">
+    <section>
       <div class="section-head">
         <h2>Settings</h2>
       </div>
       <div id="settings-loading">
         <div class="loading-line"></div>
       </div>
-      <div id="settings-content" class="settings-grid"
-           style="display:none">
+      <div id="settings-content" class="settings-grid" style="display:none">
 
-        <!-- Email notifications toggle -->
         <div class="setting-card">
           <div class="setting-label">Email notifications</div>
           <div class="toggle-wrap">
@@ -557,7 +536,6 @@
           <div class="save-status" id="notify-status"></div>
         </div>
 
-        <!-- Frequency -->
         <div class="setting-card">
           <div class="setting-label">Update frequency</div>
           <div class="setting-select">
@@ -570,7 +548,6 @@
           <div class="save-status" id="freq-status"></div>
         </div>
 
-        <!-- Timezone -->
         <div class="setting-card" style="grid-column: 1 / -1">
           <div class="setting-label">Your time zone</div>
           <div class="setting-select">
@@ -624,18 +601,15 @@
 
   async function rpc(name, body = {}) {
     const { data: { session } } = await sb.auth.getSession()
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/rpc/${name}`,
-      {
-        method: 'POST',
-        headers: {
-          'apikey':        SUPABASE_KEY,
-          'Authorization': `Bearer ${session.access_token}`,
-          'Content-Type':  'application/json'
-        },
-        body: JSON.stringify(body)
-      }
-    )
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${name}`, {
+      method: 'POST',
+      headers: {
+        'apikey':        SUPABASE_KEY,
+        'Authorization': `Bearer ${session.access_token}`,
+        'Content-Type':  'application/json'
+      },
+      body: JSON.stringify(body)
+    })
     if (!res.ok) {
       const t = await res.text()
       throw new Error(`${name} HTTP ${res.status}: ${t}`)
@@ -644,29 +618,44 @@
   }
 
   function fmtDate(iso) {
-    if (!iso) return ''
+    if (!iso) return '—'
     return new Date(iso).toLocaleDateString('en-US',
       { month: 'short', day: 'numeric', year: 'numeric' })
   }
 
-  function statusPill(status) {
-    const map = {
-      active:         ['status-active',  'In progress'],
-      booked:         ['status-booked',  'Call booked'],
-      pending_review: ['status-pending', 'Under review'],
-      dead:           ['status-dead',    'Closed'],
-    }
-    const [cls, label] = map[status] || ['status-dead', status]
-    return `<span class="status-pill ${cls}">${label}</span>`
+  function fmtDur(s) {
+    if (!s) return '—'
+    const m = Math.round(s / 60)
+    return m < 1 ? '<1 min' : `${m} min`
   }
 
-  function show(id)  { document.getElementById(id).style.display = '' }
-  function hide(id)  { document.getElementById(id).style.display = 'none' }
+  function pill(cls, label) {
+    return `<span class="pill ${cls}">${label}</span>`
+  }
+
+  function statusPill(status) {
+    const map = {
+      active:         ['pill-green', 'In progress'],
+      booked:         ['pill-blue',  'Call booked'],
+      pending_review: ['pill-gold',  'Under review'],
+      dead:           ['pill-dim',   'Closed'],
+    }
+    const [cls, label] = map[status] || ['pill-dim', status || '—']
+    return pill(cls, label)
+  }
+
+  function show(id)    { document.getElementById(id).style.display = '' }
+  function hide(id)    { document.getElementById(id).style.display = 'none' }
   function setText(id, v) { document.getElementById(id).textContent = v }
 
-  // ── LOGIN GATE ────────────────────────────────────────────
+  function esc(s) {
+    if (s == null) return ''
+    return String(s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+  }
 
-  let loginEmail = ''
+  // ── LOGIN GATE ────────────────────────────────────────────
 
   document.getElementById('login-send-btn')
     .addEventListener('click', async () => {
@@ -695,23 +684,16 @@
 
       if (error) {
         st.className = 'gate-status err'
-        st.textContent = 'Could not send code. Try again.'
+        st.textContent = 'Could not send link. Try again.'
         btn.disabled = false
-        btn.textContent = 'Send code'
+        btn.textContent = 'Send sign-in link'
         return
       }
 
-      loginEmail = email
-      document.getElementById('otp-hint').textContent =
-        `We sent a code to ${email}.`
+      document.getElementById('otp-email-display').textContent = email
       hide('gate-email')
       show('gate-otp')
     })
-
-  // Magic link lands back here with tokens in the URL hash —
-  // Supabase JS picks them up automatically via onAuthStateChange.
-
-  // ── SIGN OUT ──────────────────────────────────────────────
 
   document.getElementById('sign-out-btn')
     .addEventListener('click', async () => {
@@ -724,17 +706,10 @@
   async function loadDashboard() {
     hide('gate')
     show('dashboard')
-
-    // load in parallel
-    await Promise.all([
-      loadRaids(),
-      loadBooked(),
-      loadRecordings(),
-      loadSettings()
-    ])
+    await Promise.all([loadRaids(), loadBooked(), loadRecordings(), loadSettings()])
   }
 
-  // Panel 1 — raids
+  // Panel 1 — raids (table)
   async function loadRaids() {
     try {
       const rows = await rpc('dashboard_raids')
@@ -750,29 +725,38 @@
         return
       }
 
-      el.innerHTML = active.map(r => `
-        <div class="card">
-          <div class="card-email">${esc(r.email)}</div>
-          <div class="card-meta">
-            ${r.name ? esc(r.name) : ''}
-            ${r.company ? ' · ' + esc(r.company) : ''}
-          </div>
-          <div class="card-meta">Started ${fmtDate(r.created_at)}</div>
-          ${statusPill(r.status)}
-        </div>
-      `).join('')
-
-      // Set nav name from prefs (loaded in parallel; fallback handled there)
+      el.innerHTML = `
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Email / Target</th>
+              <th>Name</th>
+              <th>Company</th>
+              <th>Started</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${active.map(r => `
+              <tr>
+                <td class="mono">${esc(r.email)}</td>
+                <td>${esc(r.name) || '<span class="muted">—</span>'}</td>
+                <td>${esc(r.company) || '<span class="muted">—</span>'}</td>
+                <td class="muted">${fmtDate(r.created_at)}</td>
+                <td>${statusPill(r.status)}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>`
     } catch (e) {
       console.error('raids', e)
-      document.getElementById('raids-content').innerHTML =
-        '<p class="empty" style="color:var(--red)">Could not load raids.</p>'
       hide('raids-loading')
       document.getElementById('raids-content').style.display = ''
+      document.getElementById('raids-content').innerHTML =
+        '<p class="empty" style="color:var(--red)">Could not load raids.</p>'
     }
   }
 
-  // Panel 2 — booked calls
+  // Panel 2 — booked calls (table)
   async function loadBooked() {
     try {
       const rows = await rpc('dashboard_booked')
@@ -786,35 +770,40 @@
         return
       }
 
-      el.innerHTML = rows.map(r => `
-        <div class="card">
-          <div class="card-email">${esc(r.target_email)}</div>
-          <div class="card-meta">
-            ${r.discreet_label ? esc(r.discreet_label) : ''}
-          </div>
-          <div class="card-meta">
-            ${r.host_name ? 'Host: ' + esc(r.host_name) : ''}
-            ${r.booked_slot
-              ? ' · ' + fmtDate(r.booked_slot)
-              : ''}
-          </div>
-          <span class="status-pill status-booked">Booked</span>
-        </div>
-      `).join('')
+      el.innerHTML = `
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Target</th>
+              <th>Label</th>
+              <th>Host</th>
+              <th>Booked for</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map(r => `
+              <tr>
+                <td class="mono">${esc(r.target_email)}</td>
+                <td>${esc(r.discreet_label) || '<span class="muted">—</span>'}</td>
+                <td>${esc(r.host_name) || '<span class="muted">—</span>'}</td>
+                <td class="muted">${fmtDate(r.booked_slot)}</td>
+                <td>${pill('pill-blue', 'Booked')}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>`
     } catch (e) {
       console.error('booked', e)
     }
   }
 
-  // Panel 3 — recordings
+  // Panel 3 — recordings (table)
   async function loadRecordings() {
     try {
       const rows = await rpc('dashboard_recordings')
       hide('rec-loading')
       const el = document.getElementById('rec-content')
-      el.style.display = 'flex'
-      el.style.flexDirection = 'column'
-      el.style.gap = '10px'
+      el.style.display = ''
       setText('rec-count', `${rows.length}`)
 
       if (!rows.length) {
@@ -822,35 +811,39 @@
         return
       }
 
-      el.innerHTML = rows.map((r, i) => {
-        // primary label: phone shows host+number+org, web shows target email
-        const isPhone = r.channel === 'phone'
-        const primaryLine = isPhone
-          ? [r.host_name, r.number, r.claimed_org].filter(Boolean).map(esc).join(' · ')
-          : esc(r.target_email || '—')
-
-        const channelBadge = `<span class="status-pill ${isPhone ? 'status-pending' : 'status-booked'}"
-          style="margin-top:0;margin-right:8px;font-size:9px">${isPhone ? 'PHONE' : 'WEB'}</span>`
-
-        const metaParts = [
-          fmtDate(r.started_at),
-          r.duration_seconds ? Math.round(r.duration_seconds / 60) + ' min' : null,
-          r.outcome ? esc(r.outcome) : null
-        ].filter(Boolean).join(' · ')
-
-        const playBtn = r.playable
-          ? `<button class="play-btn" id="play-${i}" data-slug="${esc(r.slug)}">▶ Play</button>`
-          : `<button class="play-btn" disabled style="background:#3a2020;color:#666;cursor:not-allowed">Expired</button>`
-
-        return `
-          <div class="rec-card">
-            <div class="rec-info">
-              <div class="rec-email">${channelBadge}${primaryLine}</div>
-              <div class="rec-meta">${metaParts}</div>
-            </div>
-            ${playBtn}
-          </div>`
-      }).join('')
+      el.innerHTML = `
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Who</th>
+              <th>Outcome</th>
+              <th>Duration</th>
+              <th>Date</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map((r, i) => {
+              const isPhone = r.channel === 'phone'
+              const who = isPhone
+                ? [r.host_name, r.number, r.claimed_org].filter(Boolean).map(esc).join(' · ')
+                : esc(r.target_email || '—')
+              const playCell = r.playable
+                ? `<button class="play-btn" id="play-${i}">▶ Play</button>`
+                : `<button class="play-btn" disabled>Expired</button>`
+              return `
+                <tr>
+                  <td>${pill(isPhone ? 'pill-gold' : 'pill-blue', isPhone ? 'PHONE' : 'WEB')}</td>
+                  <td class="mono" style="max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${who}</td>
+                  <td class="muted">${esc(r.outcome) || '—'}</td>
+                  <td class="muted">${fmtDur(r.duration_seconds)}</td>
+                  <td class="muted">${fmtDate(r.started_at)}</td>
+                  <td>${playCell}</td>
+                </tr>`
+            }).join('')}
+          </tbody>
+        </table>`
 
       // Wire play buttons
       rows.forEach((r, i) => {
@@ -878,10 +871,10 @@
 
     } catch (e) {
       console.error('recordings', e)
-      const el = document.getElementById('rec-content')
-      el.style.display = ''
-      el.innerHTML = '<p class="empty" style="color:var(--red)">Could not load recordings.</p>'
       hide('rec-loading')
+      document.getElementById('rec-content').style.display = ''
+      document.getElementById('rec-content').innerHTML =
+        '<p class="empty" style="color:var(--red)">Could not load recordings.</p>'
     }
   }
 
@@ -892,10 +885,8 @@
       hide('settings-loading')
       show('settings-content')
 
-      // Nav name
       setText('nav-name', prefs.host_name || prefs.email || '')
 
-      // notify toggle
       const toggle = document.getElementById('notify-toggle')
       const label  = document.getElementById('notify-label')
       toggle.checked = !!prefs.notify_global
@@ -915,7 +906,6 @@
         }
       })
 
-      // frequency
       const freqSel = document.getElementById('freq-select')
       freqSel.value = prefs.frequency_mode || 'weekly'
 
@@ -924,8 +914,8 @@
           const st = document.getElementById('freq-status')
           try {
             await rpc('set_prefs', {
-              p_notify_global:   toggle.checked,
-              p_frequency_mode:  freqSel.value
+              p_notify_global:  toggle.checked,
+              p_frequency_mode: freqSel.value
             })
             st.className = 'save-status ok'
             st.textContent = '✓ Saved'
@@ -936,13 +926,12 @@
           }
         })
 
-      // timezone
       buildTzSelect(prefs.time_zone)
 
       document.getElementById('tz-save-btn')
         .addEventListener('click', async () => {
-          const st  = document.getElementById('tz-status')
-          const tz  = document.getElementById('tz-select').value
+          const st = document.getElementById('tz-status')
+          const tz = document.getElementById('tz-select').value
           try {
             await rpc('set_prefs', {
               p_notify_global: toggle.checked,
@@ -964,8 +953,7 @@
 
   function buildTzSelect(saved) {
     const sel      = document.getElementById('tz-select')
-    const detected = saved ||
-      Intl.DateTimeFormat().resolvedOptions().timeZone
+    const detected = saved || Intl.DateTimeFormat().resolvedOptions().timeZone
     let matched = false
 
     TZ_OPTIONS.forEach(([val, label]) => {
@@ -985,25 +973,12 @@
     }
   }
 
-  function esc(s) {
-    if (s == null) return ''
-    return String(s)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-  }
-
   // ── INIT ─────────────────────────────────────────────────
 
   async function init() {
     const { data: { session } } = await sb.auth.getSession()
-    if (session) {
-      await loadDashboard()
-      return
-    }
+    if (session) { await loadDashboard(); return }
 
-    // Catch magic link landing (tokens in URL hash)
     sb.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session) {
         await loadDashboard()
