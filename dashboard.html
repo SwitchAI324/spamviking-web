@@ -623,6 +623,18 @@
       { month: 'short', day: 'numeric', year: 'numeric' })
   }
 
+  const OUTCOME_LABELS = {
+    answered_human: 'Answered',
+    answered_ivr:   'Phone menu, no one reached',
+    voicemail_left: 'Voicemail left',
+    no_answer:      'No answer',
+    failed:         'Failed',
+  }
+
+  function fmtOutcome(o) {
+    return OUTCOME_LABELS[o] || esc(o) || '—'
+  }
+
   function fmtDur(s) {
     if (!s) return '—'
     const m = Math.round(s / 60)
@@ -836,7 +848,7 @@
                 <tr>
                   <td>${pill(isPhone ? 'pill-gold' : 'pill-blue', isPhone ? 'PHONE' : 'WEB')}</td>
                   <td class="mono" style="max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${who}</td>
-                  <td class="muted">${esc(r.outcome) || '—'}</td>
+                  <td class="muted">${fmtOutcome(r.outcome)}</td>
                   <td class="muted">${fmtDur(r.duration_seconds)}</td>
                   <td class="muted">${fmtDate(r.started_at)}</td>
                   <td>${playCell}</td>
