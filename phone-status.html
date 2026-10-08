@@ -1,4 +1,4 @@
-<!-- BUILD: phone-status v1 2026-10-07 -->
+<!-- BUILD: phone-status v2 2026-10-07 -->
 <!doctype html>
 <html lang="en">
 <head>
@@ -89,9 +89,15 @@
 </main>
 
 <script>
+  // status.js lives in the posture-engine repo (posture-engine.vercel.app), but
+  // this page is served from live.spamviking.com (spamviking-web repo) — a
+  // DIFFERENT origin. So call the API by its ABSOLUTE URL; a relative path would
+  // wrongly resolve to live.spamviking.com/api/phone/status (404). If the API
+  // ever moves, change API_BASE.
+  var API_BASE = "https://posture-engine.vercel.app";
   // Forward ?key= from this page's own URL to the status endpoint (auth gate).
   var KEY = new URLSearchParams(location.search).get("key") || "";
-  var STATUS_URL = "/api/phone/status" + (KEY ? ("?key=" + encodeURIComponent(KEY)) : "");
+  var STATUS_URL = API_BASE + "/api/phone/status" + (KEY ? ("?key=" + encodeURIComponent(KEY)) : "");
 
   function esc(s){ return String(s == null ? "" : s).replace(/[&<>]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;"}[c]; }); }
   function fmt(ts){ if(!ts) return ""; try { return new Date(ts).toLocaleString([], {month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}); } catch(e){ return ts; } }
