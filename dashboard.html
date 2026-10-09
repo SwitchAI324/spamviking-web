@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BUILD: onboarding v1 2026-10-07 -->
+<!-- BUILD: onboarding v2 2026-10-08 -->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -270,6 +270,41 @@
       background: var(--green);
     }
     .toggle-label { font-size: 14px; color: var(--parchment); }
+
+    /* ── VOICE PICKER ── */
+    .voice-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .voice-play-btn {
+      flex-shrink: 0;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--muted);
+      font-size: 13px;
+      padding: 7px 11px;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+      line-height: 1;
+    }
+    .voice-play-btn:hover { color: var(--parchment); border-color: var(--muted); }
+    .voice-play-btn.playing { color: var(--gold); border-color: var(--gold); }
+
+    .voice-reset {
+      font-size: 11px;
+      color: var(--muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0;
+      margin-top: 8px;
+      display: inline-block;
+    }
+    .voice-reset:hover { color: var(--parchment); }
 
     /* ── EMPTY / LOADING ── */
     .empty { color: var(--muted); font-size: 13px; padding: 16px 0; }
@@ -558,6 +593,20 @@
           <div class="save-status" id="tz-status"></div>
         </div>
 
+        <!-- VOICE PICKER — spans full width -->
+        <div class="setting-card" style="grid-column: 1 / -1" id="voice-card">
+          <div class="setting-label">Your host voice</div>
+          <div class="voice-row">
+            <select id="voice-select" style="flex:1"></select>
+            <button class="voice-play-btn" id="voice-preview-btn" title="Preview voice">▶</button>
+            <button class="save-btn" id="voice-save-btn">Save</button>
+          </div>
+          <div>
+            <button class="voice-reset" id="voice-reset-btn">Use random voice</button>
+          </div>
+          <div class="save-status" id="voice-status"></div>
+        </div>
+
       </div>
     </section>
 
@@ -614,6 +663,24 @@
     if (!res.ok) {
       const t = await res.text()
       throw new Error(`${name} HTTP ${res.status}: ${t}`)
+    }
+    return res.json()
+  }
+
+  // Server-side voice calls (need service key — go through PE)
+  async function voiceApi(path, body = {}) {
+    const { data: { session } } = await sb.auth.getSession()
+    const res = await fetch(`${PE_BASE}${path}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${session.access_token}`,
+        'Content-Type':  'application/json'
+      },
+      body: JSON.stringify(body)
+    })
+    if (!res.ok) {
+      const t = await res.text()
+      throw new Error(`${path} HTTP ${res.status}: ${t}`)
     }
     return res.json()
   }
@@ -959,6 +1026,9 @@
           }
         })
 
+      // Load voice picker after other settings are up
+      loadVoicePicker()
+
     } catch (e) {
       console.error('settings', e)
     }
@@ -984,6 +1054,146 @@
       opt.selected = true
       sel.insertBefore(opt, sel.firstChild)
     }
+  }
+
+  // ── VOICE PICKER ─────────────────────────────────────────
+
+  let voiceList = []       // [{voice_id, sex, label, accent, sample_url}]
+  let voiceAudio = null    // current HTMLAudioElement
+
+  async function loadVoicePicker() {
+    try {
+      // Fetch active voices and current saved voice in parallel
+      const [voices, savedVoiceId] = await Promise.all([
+        rpc('list_active_voices'),
+        voiceApi('/api/voice/get-voice').then(r => r.voice_id).catch(() => null)
+      ])
+
+      voiceList = voices || []
+      const sel = document.getElementById('voice-select')
+      sel.innerHTML = ''
+
+      // If the saved voice isn't in the active list, show it as a placeholder
+      const savedInList = voiceList.find(v => v.voice_id === savedVoiceId)
+      if (savedVoiceId && !savedInList) {
+        const opt = document.createElement('option')
+        opt.value = savedVoiceId
+        opt.textContent = 'Your current voice'
+        opt.selected = true
+        sel.appendChild(opt)
+      }
+
+      voiceList.forEach(v => {
+        const opt = document.createElement('option')
+        opt.value = v.voice_id
+        opt.textContent = v.accent ? `${v.label} · ${v.accent}` : v.label
+        if (v.voice_id === savedVoiceId) opt.selected = true
+        sel.appendChild(opt)
+      })
+
+      // If nothing saved, add a "— pick a voice —" prompt as first option
+      if (!savedVoiceId) {
+        const prompt = document.createElement('option')
+        prompt.value = ''
+        prompt.textContent = '— pick a voice —'
+        prompt.disabled = true
+        prompt.selected = true
+        sel.insertBefore(prompt, sel.firstChild)
+      }
+
+      // Update preview button when selection changes
+      sel.addEventListener('change', () => {
+        stopVoicePreview()
+      })
+
+      // Preview button
+      document.getElementById('voice-preview-btn')
+        .addEventListener('click', () => {
+          const voiceId = sel.value
+          if (!voiceId) return
+          const voice = voiceList.find(v => v.voice_id === voiceId)
+          const url = voice?.sample_url
+          if (!url) return
+
+          const btn = document.getElementById('voice-preview-btn')
+          if (voiceAudio && !voiceAudio.paused) {
+            stopVoicePreview()
+            return
+          }
+          stopVoicePreview()
+          voiceAudio = new Audio(url)
+          voiceAudio.play()
+          btn.textContent = '■'
+          btn.classList.add('playing')
+          voiceAudio.onended = () => {
+            btn.textContent = '▶'
+            btn.classList.remove('playing')
+            voiceAudio = null
+          }
+        })
+
+      // Save button
+      document.getElementById('voice-save-btn')
+        .addEventListener('click', async () => {
+          const st = document.getElementById('voice-status')
+          const voiceId = sel.value
+          if (!voiceId) {
+            st.className = 'save-status err'
+            st.textContent = 'Pick a voice first.'
+            return
+          }
+          try {
+            await voiceApi('/api/voice/set-voice', { voice_id: voiceId })
+            st.className = 'save-status ok'
+            st.textContent = '✓ Saved'
+            setTimeout(() => { st.textContent = '' }, 2500)
+          } catch {
+            st.className = 'save-status err'
+            st.textContent = 'Could not save.'
+          }
+        })
+
+      // Reset button
+      document.getElementById('voice-reset-btn')
+        .addEventListener('click', async () => {
+          const st = document.getElementById('voice-status')
+          try {
+            await voiceApi('/api/voice/clear-voice')
+            // Reset dropdown to prompt
+            sel.value = ''
+            if (!sel.querySelector('option[value=""]')) {
+              const prompt = document.createElement('option')
+              prompt.value = ''
+              prompt.textContent = '— pick a voice —'
+              prompt.disabled = true
+              prompt.selected = true
+              sel.insertBefore(prompt, sel.firstChild)
+            } else {
+              sel.querySelector('option[value=""]').selected = true
+            }
+            stopVoicePreview()
+            st.className = 'save-status ok'
+            st.textContent = '✓ Cleared — new calls get a random voice'
+            setTimeout(() => { st.textContent = '' }, 3000)
+          } catch {
+            st.className = 'save-status err'
+            st.textContent = 'Could not clear.'
+          }
+        })
+
+    } catch (e) {
+      console.error('voice picker', e)
+      document.getElementById('voice-card').style.display = 'none'
+    }
+  }
+
+  function stopVoicePreview() {
+    if (voiceAudio) {
+      voiceAudio.pause()
+      voiceAudio = null
+    }
+    const btn = document.getElementById('voice-preview-btn')
+    if (btn) { btn.textContent = '▶'; btn.classList.remove('playing') }
   }
 
   // ── INIT ─────────────────────────────────────────────────
